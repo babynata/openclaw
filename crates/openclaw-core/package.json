@@ -1,0 +1,45 @@
+{
+  "name": "@openclaw/core-native",
+  "version": "0.1.0",
+  "description": "Rust native addon for performance-critical OpenClaw internals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openclaw/openclaw.git",
+    "directory": "crates/openclaw-core"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "openclaw-core.*.node"
+  ],
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "prepublishOnly": "napi prepublish -t npm"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3"
+  },
+  "optionalDependencies": {
+    "@openclaw/core-native-darwin-arm64": "0.1.0",
+    "@openclaw/core-native-darwin-x64": "0.1.0",
+    "@openclaw/core-native-linux-arm64-gnu": "0.1.0",
+    "@openclaw/core-native-linux-x64-gnu": "0.1.0",
+    "@openclaw/core-native-win32-x64-msvc": "0.1.0"
+  },
+  "napi": {
+    "name": "openclaw-core",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "aarch64-apple-darwin",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-pc-windows-msvc"
+      ]
+    }
+  }
+}

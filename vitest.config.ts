@@ -35,6 +35,7 @@ export default defineConfig({
     maxWorkers: isCI ? ciWorkers : localWorkers,
     include: [
       "src/**/*.test.ts",
+      "crates/**/*.test.ts",
       "extensions/**/*.test.ts",
       "test/**/*.test.ts",
       "ui/src/ui/views/agents-utils.test.ts",

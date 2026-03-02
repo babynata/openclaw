@@ -401,6 +401,8 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
+- Infra/Rust: introduce `crates/openclaw-core` Rust workspace with napi-rs bindings; add `BindingCache` LRU implementation replacing the all-or-nothing flush in route binding evaluation, so hot entries are never evicted when the 2000-key limit is reached.
+
 - Android/Chat: improve streaming delivery handling and markdown rendering quality in the native Android chat UI, including better GitHub-flavored markdown behavior. (#26079) Thanks @obviyus.
 - Android/Startup perf: defer foreground-service startup, move WebView debugging init out of critical startup, and add startup macrobenchmark + low-noise perf CLI scripts for deterministic cold-start tracking. (#26659) Thanks @obviyus.
 - UI/Chat compose: add mobile stacked layout for compose action buttons on small screens to improve send/session controls usability. (#11167) Thanks @junyiz.
