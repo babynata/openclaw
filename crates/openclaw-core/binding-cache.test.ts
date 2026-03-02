@@ -8,12 +8,27 @@ import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { describe, it, expect, beforeEach } from "vitest";
 
-// Load the native addon from the built .node file.
-// The addon is built by `cargo build -p openclaw-core` and copied to the crate dir.
 const req = createRequire(import.meta.url);
 const addonDir = resolve(import.meta.dirname ?? __dirname, ".");
 
-let BindingCache: new (capacity: number) => {
+// Detect whether the native addon has been built. If not, skip all tests
+// gracefully — do NOT call process.exit(), which would kill the whole runner.
+// To build: `cargo build -p openclaw-core` then copy the .node file.
+const addonBuilt = (() => {
+  try {
+    req(resolve(addonDir, "index.js"));
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
+const describeIfBuilt = addonBuilt ? describe : describe.skip;
+
+// Lazily loaded only when addonBuilt is true.
+const native = addonBuilt ? req(resolve(addonDir, "index.js")) : null;
+
+type NativeBindingCache = {
   get(channel: string, accountId: string): string | null;
   set(channel: string, accountId: string, value: string): void;
   invalidate(): void;
@@ -21,33 +36,18 @@ let BindingCache: new (capacity: number) => {
   readonly capacity: number;
 };
 
-let coreVersion: () => string;
+const BindingCache: new (capacity: number) => NativeBindingCache = native?.BindingCache;
+const coreVersion: (() => string) | undefined = native?.coreVersion;
 
-try {
-  const native = req(resolve(addonDir, "index.js"));
-  BindingCache = native.BindingCache;
-  coreVersion = native.coreVersion;
-} catch (err) {
-  // Skip tests if the native addon hasn't been built yet.
-  // Run `cargo build -p openclaw-core` and copy the .node file first.
-  describe.skip("BindingCache (native addon not built)", () => {
-    it("skipped", () => {});
-  });
-  // Exit this module so the rest doesn't fail at import time.
-  // @ts-ignore
-  process.exit?.(0);
-  throw err;
-}
-
-describe("coreVersion", () => {
+describeIfBuilt("coreVersion", () => {
   it("returns a semver string", () => {
-    const v = coreVersion();
+    const v = coreVersion!();
     expect(v).toMatch(/^\d+\.\d+\.\d+$/);
   });
 });
 
-describe("BindingCache", () => {
-  let cache: InstanceType<typeof BindingCache>;
+describeIfBuilt("BindingCache", () => {
+  let cache: NativeBindingCache;
 
   beforeEach(() => {
     cache = new BindingCache(5);
