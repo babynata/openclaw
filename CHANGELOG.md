@@ -6,6 +6,8 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
+- Infra/Rust: introduce `crates/openclaw-core` Rust workspace with napi-rs bindings; add `BindingCache` LRU implementation replacing the all-or-nothing flush in route binding evaluation, so hot entries are never evicted when the 2000-key limit is reached.
+
 - Android/Chat: improve streaming delivery handling and markdown rendering quality in the native Android chat UI, including better GitHub-flavored markdown behavior. (#26079) Thanks @obviyus.
 - Branding/Docs + Apple surfaces: replace remaining `bot.molt` launchd label, bundle-id, logging subsystem, and command examples with `ai.openclaw` across docs, iOS app surfaces, helper scripts, and CLI test fixtures.
 
